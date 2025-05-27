@@ -64,6 +64,7 @@
         <button>Valider</button>
         </form>
         <?php 
+        if(!empty($_POST['pseudo']) && !empty($_POST['mdp'])) {
             $pseudo = $_POST['pseudo'];
             $mdp = $_POST['mdp'];
             if ($pseudo == "admin" && $mdp == 1234){
@@ -71,7 +72,8 @@
             } else {
                 
                 echo "erreur";
-        };
+            };
+        }
         ?>
 
     <h2>EXO 6</h2>
@@ -121,17 +123,19 @@
         </select>
         <button>Valider</button>
     <?php 
-    function convertion($euro, $monnaie) {
-    $euro = $_POST['number'];
-    $operateur = $_POST['operateur'];
-        if($operateur === 'Dollars'){
-            $convertie = $euro * 1.13 . "Dollars";
-        } else if ($operateur === 'peso') {
-            $convertie = $euro * 21.93 . "Pesos";
+    if(!empty($_POST['number']) && $_POST['operateur']) {
+        function convertion($euro, $monnaie) {
+        $euro = $_POST['number'];
+        $operateur = $_POST['operateur'];
+            if($operateur === 'Dollars'){
+                $convertie = $euro * 1.13 . "Dollars";
+            } else if ($operateur === 'peso') {
+                $convertie = $euro * 21.93 . "Pesos";
+            }
+        return $_POST['number'] ."euro correspond à". $convertie;
         }
-    return $_POST['number'] ."euro correspond à". $convertie;
+        echo convertion($_POST['number'], $_POST['operateur']);
     }
-    echo convertion($_POST['number'], $_POST['operateur'])
     ?>
 
     <h2>EXO 8</h2>
@@ -180,20 +184,75 @@
   </div>
   <button>Valider</button><br>
   <?php 
+  if(!empty($_POST['chiffre']) || !empty($_POST['phrase']) || !empty($_POST['capital'])) {
    if($_POST['chiffre'] != 4) {
-    echo "La question 1 est fausse <br>";
+        echo "La question 1 est fausse <br>";
    } else
-    echo "La question 1 est bonne <br>";
+        echo "La question 1 est bonne <br>";
 
    if($_POST['phrase'] != 5) {
-    echo "La question 2 est fausse <br>";
+        echo "La question 2 est fausse <br>";
    } else
-    echo "La question 2 est bonne <br>";
+        echo "La question 2 est bonne <br>";
 
    if($_POST['capital'] != 11) {
-    echo "La question 3 est fausse";
+        echo "La question 3 est fausse";
    } else
-    echo "La question 3 est bonne";
+        echo "La question 3 est bonne";
+}
   ?>
+
+  <h2>EXO 9</h2>
+  <form action="index.php" method="POST">
+    <p>Essaye de deviné un nombre entre 0 et 1000 :</p>
+    <input type="number" name="number" id="number">
+    <button>Valider</button>
+
+    <?php 
+    session_start();
+        if(!isset($_SESSION['random_number'])) {
+            $_SESSION['random_number'] = rand(0, 1000);
+        }
+    $number = $_SESSION['random_number'];
+
+    if(!empty($_POST['number'])) {
+        if($_POST['number'] < $number) {
+            echo "Le nombre que vous proposez est trop petit";
+        } else if ($_POST['number'] > $number) {
+            echo "Le nombre que vous proposez est trop grand";
+        } else {
+            echo " bien joué le nombre qu'il fallait trouver était bien " . $number;
+            unset($_SESSION['random_number']);
+        }
+    }
+    ?>
+  </form>
+
+  <h2>EXO 10</h2>
+        <form action="index.php" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Envoyer</button>
+        </form>
+        <?php
+    if (isset($_FILES["image"])) {
+        $targetFile = basename($_FILES["image"]["name"]);
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        $check = getimagesize($_FILES["image"]["tmp_name"]);
+        if ($check !== false) {
+            echo "C'est bien une image - " . $check["mime"] . ".";
+            $uploadOk = 1;
+        } else {
+            echo "Ce n'est pas une image.";
+            $uploadOk = 0;
+        }
+    }
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+            && $imageFileType != "gif") {
+            echo " Seulement les formats : JPG, JPEG, PNG & GIF sont acceptés.";
+            $uploadOk = 0;
+        }
+?>
 </body>
 </html>
